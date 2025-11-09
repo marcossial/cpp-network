@@ -11,14 +11,14 @@ int main() {
 
     // Inicializa a DLL do Winsock
     if (WSAStartup(MAKEWORD(2,2), &wsa) != 0) {
-        std::cerr << "Erro ao inicializar Winsock.\n";
+        std::cerr << "Erro ao inicializar Winsock " << WSAGetLastError() << std::endl;
         return 1;
     }
 
     // Cria o socket TCP
     servidor = socket(AF_INET, SOCK_STREAM, 0);
     if (servidor == INVALID_SOCKET) {
-        std::cerr << "Erro ao criar o socket.\n";
+        std::cerr << "Erro ao criar o socket " << WSAGetLastError() << std::endl;;
         WSACleanup();
         return 1;
     }
@@ -28,19 +28,24 @@ int main() {
     servidor_addr.sin_port = htons(54000); // porta arbitrária
 
     if (bind(servidor, (struct sockaddr*)&servidor_addr, sizeof(servidor_addr)) == SOCKET_ERROR) {
-        std::cerr << "Erro em bind().\n";
+        std::cerr << "Erro em bind() " << WSAGetLastError() << std::endl;
         closesocket(servidor);
         WSACleanup();
         return 1;
     }
 
-    listen(servidor, 1);
+    if(listen(servidor, 1) == SOCKET_ERROR) {
+        std::cerr << "Erro em listen() " << WSAGetLastError() << std::endl;
+        closesocket(servidor);
+        WSACleanup();
+        return 1;
+    }
     std::cout << "Servidor aguardando conexões na porta 54000...\n";
 
     // Aceita um cliente
     cliente = accept(servidor, (struct sockaddr*)&cliente_addr, &cliente_len);
     if (cliente == INVALID_SOCKET) {
-        std::cerr << "Erro em accept().\n";
+        std::cerr << "Erro em accept() " << WSAGetLastError() << std::endl;;
         closesocket(servidor);
         WSACleanup();
         return 1;
