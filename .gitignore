@@ -1,0 +1,47 @@
+# Compilação e build
+/build/
+[Cc]MakeCache.txt
+[Cc]MakeFiles/
+cmake_install.cmake
+Makefile
+CMakeUserPresets.json
+CMakeLists.txt.user
+
+# Binários
+*.exe
+*.dll
+*.obj
+*.o
+*.a
+*.lib
+*.pdb
+*.ilk
+
+# Logs e temporários
+*.log
+*.tmp
+*.bak
+*.swp
+
+# IDEs e editores
+.vscode/
+.idea/
+*.code-workspace
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Arquivos gerados por testes
+/testing/
+*.out
+*.test
+
+# Arquivos de cache de depuradores
+*.dSYM/
+*.ipch
+*.pch
+
+# Outras ferramentas
+/.vs/
