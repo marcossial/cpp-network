@@ -55,11 +55,48 @@ int main() {
 
     char buffer[512];
     int bytesRecebidos = recv(cliente, buffer, sizeof(buffer), 0);
+    int bytesEnviados;
     if (bytesRecebidos > 0) {
         buffer[bytesRecebidos] = '\0';
         std::cout << "Mensagem recebida: " << buffer << "\n";
-        send(cliente, "Mensagem recebida com sucesso!", 30, 0);
+
+        bytesEnviados = send(cliente, "Mensagem recebida com sucesso!", 30, 0);
+        if (bytesEnviados == SOCKET_ERROR) {
+            std::cerr << "Erro em send() " << WSAGetLastError() << std::endl;
+            closesocket(servidor);
+            WSACleanup();
+            return 1;
+        }
     }
+
+    // Recebe até o par encerrar a conexão
+    do {
+        bytesRecebidos = recv(cliente, buffer, sizeof(buffer), 0);
+        if (bytesRecebidos > 0) {
+            std::cout << "Bytes recebidos: " << bytesRecebidos << "\n";
+
+            // Ecoa de volta o buffer
+            bytesEnviados = send(cliente, buffer, sizeof(buffer), 0);
+            if (bytesEnviados == SOCKET_ERROR) {
+                std::cerr << "Erro em send() " << WSAGetLastError() << std::endl;
+                closesocket(servidor);
+                WSACleanup();
+                return 1;
+            }
+            std::cout << "Bytes enviados: " << bytesEnviados << "\n";
+        }
+        else if (bytesRecebidos == 0) {
+            std::cout << "Encerrando conexão...\n";
+        } 
+        else {
+            std::cerr << "Erro em recv() " << WSAGetLastError() << std::endl;
+            closesocket(servidor);
+            WSACleanup();
+            return 1;
+        }
+    } while (bytesRecebidos > 0);
+
+    shutdown(cliente, SD_SEND);
 
     closesocket(cliente);
     closesocket(servidor);

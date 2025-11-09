@@ -34,8 +34,8 @@ int main() {
     std::cout << "Conectado ao servidor!\n";
 
     // Envia a mensagem
-    const char* msg = "Olá, servidor!";
-    send(sock, msg, strlen(msg), 0);
+    const char* msg1 = "Olá, servidor!";
+    send(sock, msg1, strlen(msg1), 0);
     
     // Recebe a resposta
     char buffer[512];
@@ -44,7 +44,21 @@ int main() {
         buffer[bytesRecebidos] = '\0';
         std::cout << "Servidor respondeu: " << buffer << "\n";
     }
-    
+
+    const char* msg2 = "Teste";
+    send(sock, msg2, strlen(msg2), 0);
+    do {
+
+        bytesRecebidos = recv(sock, buffer, sizeof(buffer), 0);
+        if (bytesRecebidos > 0) 
+            std::cout << "Bytes recebidos: " << bytesRecebidos << "\n";
+        else if (bytesRecebidos == 0)
+            std::cout << "Conexão encerrada.\n";
+        else
+            std::cerr << "Erro em recv() " << WSAGetLastError() << std::endl;
+
+    } while (bytesRecebidos > 0);
+
     closesocket(sock);
     WSACleanup();
     return 0;
